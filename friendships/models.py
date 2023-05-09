@@ -8,7 +8,7 @@ class StatusFields(models.TextChoices):
     REQUESTED = "Requested"
 
 
-class friendship(models.Model):
+class Friendship(models.Model):
     status = models.CharField(
         choices=StatusFields.choices,
         max_length=20
@@ -17,3 +17,6 @@ class friendship(models.Model):
 
     user_request = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="users_request")
     user_friendship = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="users_friendhip")
+
+    def __str__(self) -> str:
+        return f'<UserRequest: {self.user_request} - UserFriendship: {self.user_friendship} - Status: {self.status}>'
