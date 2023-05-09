@@ -125,12 +125,9 @@ class FollowerView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class FollowerUniqueView(APIView):
-    def get(self, request: Request, follower_type: str, follower_key: str) -> Response:
+class FollowerFollowerUniqueView(APIView):
+    def get(self, request: Request, follower_key: str) -> Response:
         follower = follower_key
-
-        if follower_type != "follower" and follower_type != "following":
-            return Response({"message": ['Allowed types are "follower" and "following"']})
 
         try:
             if User.objects.get(username=follower_key):
@@ -144,16 +141,36 @@ class FollowerUniqueView(APIView):
         except User.DoesNotExist:
             pass
 
-        if follower_type == "follower":
-            if Follower.objects.filter(user_follower=follower):
-                result = Follower.objects.filter(user_follower=follower)
-            else:
-                return Response({"message": "Follower is empty"}, status.HTTP_400_BAD_REQUEST)
+        if Follower.objects.filter(user_follower=follower):
+            result = Follower.objects.filter(user_follower=follower)
         else:
-            if Follower.objects.filter(user_following=follower):
-                result = Follower.objects.filter(user_following=follower)
-            else:
-                return Response({"message": "Following is empty"}, status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Follower is empty"}, status.HTTP_400_BAD_REQUEST)
+
+        serializer = UserFollowerSerializer(result, many=True)
+
+        return Response(serializer.data, status.HTTP_200_OK)
+
+
+class FollowerFollowingUniqueView(APIView):
+    def get(self, request: Request, following_key: str) -> Response:
+        following = following_key
+
+        try:
+            if User.objects.get(username=following_key):
+                following = User.objects.get(username=following_key).id
+        except User.DoesNotExist:
+            pass
+
+        try:
+            if User.objects.get(email=following_key):
+                following = User.objects.get(email=following_key).id
+        except User.DoesNotExist:
+            pass
+
+        if Follower.objects.filter(user_following=following):
+            result = Follower.objects.filter(user_following=following)
+        else:
+            return Response({"message": "Following is empty"}, status.HTTP_400_BAD_REQUEST)
 
         serializer = UserFollowerSerializer(result, many=True)
 
