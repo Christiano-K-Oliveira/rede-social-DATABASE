@@ -1,6 +1,6 @@
 from rest_framework import permissions
-from friendships.models import Friendship
 from rest_framework.views import View
+from friendships.models import Friendship
 import ipdb
 
 

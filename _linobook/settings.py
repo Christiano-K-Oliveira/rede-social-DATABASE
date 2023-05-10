@@ -63,7 +63,8 @@ THIRD_PARTY_APPS = [
 MY_APPS = [
     "users",
     "followers",
-    "friendships"
+    "friendships",
+    "publications"
 ]
 
 
