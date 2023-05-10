@@ -127,7 +127,7 @@ class FollowerView(APIView):
 
 class FollowerFollowerUniqueView(APIView):
     def get(self, request: Request, follower_key: str) -> Response:
-        follower = follower_key
+        follower = False
 
         try:
             if User.objects.get(username=follower_key):
@@ -141,6 +141,14 @@ class FollowerFollowerUniqueView(APIView):
         except User.DoesNotExist:
             pass
 
+        try:
+            if User.objects.get(id=follower_key):
+                follower = User.objects.get(id=follower_key).id
+        except (User.DoesNotExist, ValueError):
+            if follower is False:
+                return Response({"message": "Follower not found"}, status.HTTP_404_NOT_FOUND)
+        
+
         if Follower.objects.filter(user_follower=follower):
             result = Follower.objects.filter(user_follower=follower)
         else:
@@ -153,7 +161,7 @@ class FollowerFollowerUniqueView(APIView):
 
 class FollowerFollowingUniqueView(APIView):
     def get(self, request: Request, following_key: str) -> Response:
-        following = following_key
+        following = False
 
         try:
             if User.objects.get(username=following_key):
@@ -166,6 +174,13 @@ class FollowerFollowingUniqueView(APIView):
                 following = User.objects.get(email=following_key).id
         except User.DoesNotExist:
             pass
+
+        try:
+            if User.objects.get(id=following_key):
+                following = User.objects.get(id=following_key).id
+        except (User.DoesNotExist, ValueError):
+            if following is False:
+                return Response({"message": "Following not found"}, status.HTTP_404_NOT_FOUND)
 
         if Follower.objects.filter(user_following=following):
             result = Follower.objects.filter(user_following=following)
