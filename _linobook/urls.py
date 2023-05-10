@@ -30,5 +30,6 @@ urlpatterns = [
     path("api/", include("users.urls")),
     path("api/", include("followers.urls")),
     path("api/", include("friendships.urls")),
-    path("api/", include("publications.urls"))
+    path("api/", include("publications.urls")),
+    path("api/", include("likes.urls"))
 ]

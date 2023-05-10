@@ -140,7 +140,10 @@ class PublicationsPrivateView(APIView):
             if Follower.objects.filter(user_follower=request.user.id, user_following=key["user_publication"]):
                 publications_allowed.append(key)
 
-            if Friendship.objects.filter(user_request=request.user.id, user_friendship=key["user_publication"]) or Friendship.objects.filter(user_request=key["user_publication"], user_friendship=request.user.id):
+            if Friendship.objects.filter(user_request=request.user.id, user_friendship=key["user_publication"], status="Accepted") or Friendship.objects.filter(user_request=key["user_publication"], user_friendship=request.user.id, status="Accepted"):
+                publications_allowed.append(key)
+
+            if key["user_publication"] == request.user.id:
                 publications_allowed.append(key)
 
         serializer = PublicationSerializer(data=publications_allowed, many=True)
@@ -162,7 +165,9 @@ class TimelineView(APIView):
             if key.permission == "private":
                 if Follower.objects.filter(user_follower=request.user.id, user_following=key.user_publication):
                     pubs_allowed.insert(0, key)
-                if Friendship.objects.filter(user_request=request.user.id, user_friendship=key.user_publication) or Friendship.objects.filter(user_request=key.user_publication, user_friendship=request.user.id):
+                if Friendship.objects.filter(user_request=request.user.id, user_friendship=key.user_publication, status="Accepted") or Friendship.objects.filter(user_request=key.user_publication, user_friendship=request.user.id, status="Accepted"):
+                    pubs_allowed.insert(0, key)
+                if key.user_publication.id == request.user.id:
                     pubs_allowed.insert(0, key)
             else:
                 pubs_allowed.insert(0, key)

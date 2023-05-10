@@ -64,7 +64,8 @@ MY_APPS = [
     "users",
     "followers",
     "friendships",
-    "publications"
+    "publications",
+    "likes"
 ]
 
 
