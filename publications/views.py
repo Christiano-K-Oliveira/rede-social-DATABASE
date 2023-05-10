@@ -152,4 +152,22 @@ class PublicationsPrivateView(APIView):
 class TimelineView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsPublicationOwner]
-    ...
+
+    def get(self, request: Request) -> Response:
+        self.check_object_permissions(request, request.user.id)
+        pubs_allowed = []
+        pubs = Publication.objects.all()
+
+        for key in pubs:
+            if key.permission == "private":
+                if Follower.objects.filter(user_follower=request.user.id, user_following=key.user_publication):
+                    pubs_allowed.insert(0, key)
+                if Friendship.objects.filter(user_request=request.user.id, user_friendship=key.user_publication) or Friendship.objects.filter(user_request=key.user_publication, user_friendship=request.user.id):
+                    pubs_allowed.insert(0, key)
+            else:
+                pubs_allowed.insert(0, key)
+
+        serializer = PublicationSerializer(data=pubs_allowed, many=True)
+        serializer.is_valid()
+
+        return Response(serializer.data, status.HTTP_200_OK)
