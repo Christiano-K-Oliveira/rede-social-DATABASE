@@ -46,7 +46,16 @@ class UserDetailView(APIView):
         serializer = UserReturnSerializer(data=model_to_dict(user))
         serializer.is_valid()
 
-        return Response(serializer.data, status.HTTP_200_OK)
+        user_valid = {
+            "id": user.id,
+            "name": serializer.data["name"],
+            "username": serializer.data["username"],
+            "email": serializer.data["email"],
+            "birthdate": serializer.data["birthdate"],
+            "bio": serializer.data["bio"]
+        }
+
+        return Response(user_valid, status.HTTP_200_OK)
 
     def patch(self, request: Request, user_key: str) -> Response:
         user = False

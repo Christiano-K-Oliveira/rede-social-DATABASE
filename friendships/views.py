@@ -65,7 +65,7 @@ class FriendshipFriendshipUniqueView(APIView):
     permission_classes = [IsFriendshipOwner]
 
     def get(self, request: Request, friendship_key: str) -> Response:
-        friendship = friendship_key
+        friendship = False
 
         try:
             if User.objects.get(username=friendship_key):
@@ -78,6 +78,13 @@ class FriendshipFriendshipUniqueView(APIView):
                 friendship = User.objects.get(email=friendship_key).id
         except User.DoesNotExist:
             pass
+
+        try:
+            if User.objects.get(id=friendship_key):
+                friendship = User.objects.get(id=friendship_key).id
+        except (User.DoesNotExist, ValueError):
+            if friendship is False:
+                return Response({"message": "Friendship not found"})
 
         self.check_object_permissions(request, friendship)
 
@@ -169,7 +176,7 @@ class FriendshipRequestUniqueView(APIView):
     permission_classes = [IsFriendshipOwner]
 
     def get(self, request: Request, friendship_key: str) -> Response:
-        friendship = friendship_key
+        friendship = False
 
         try:
             if User.objects.get(username=friendship_key):
@@ -182,6 +189,13 @@ class FriendshipRequestUniqueView(APIView):
                 friendship = User.objects.get(email=friendship_key).id
         except User.DoesNotExist:
             pass
+
+        try:
+            if User.objects.get(id=friendship_key):
+                friendship = User.objects.get(id=friendship_key).id
+        except (User.DoesNotExist, ValueError):
+            if friendship is False:
+                return Response({"message": "Friendship request not found"})
 
         self.check_object_permissions(request, friendship)
 
